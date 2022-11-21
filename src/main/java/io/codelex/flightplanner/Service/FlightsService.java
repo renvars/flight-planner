@@ -1,27 +1,27 @@
-package io.codelex.flightplanner.controllers.adminController;
+package io.codelex.flightplanner.Service;
 
-import io.codelex.flightplanner.domain.Airport;
-import io.codelex.flightplanner.domain.CorrectFlight;
-import io.codelex.flightplanner.domain.Flights;
+import io.codelex.flightplanner.domain.*;
 import io.codelex.flightplanner.repository.FlightsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-@Service
-public class AdminService {
-
+@Repository
+public class FlightsService {
     private final FlightsRepository flightsRepository;
 
     @Autowired
-    public AdminService(FlightsRepository flightsRepository) {
+    public FlightsService(FlightsRepository flightsRepository) {
         this.flightsRepository = flightsRepository;
-
     }
 
     public ResponseEntity<CorrectFlight> addFlight(CorrectFlight correctFlight) {
@@ -130,4 +130,71 @@ public class AdminService {
         correctFlight.setId(flights.getId());
         return correctFlight;
     }
+
+    public ResponseEntity<List<Airport>> getAirports(String search) {
+        search = search.toLowerCase().trim();
+        List<Airport> result = new ArrayList<>();
+        for (Flights flights : flightsRepository.findAll()) {
+            if (flights.getToAirport().toLowerCase().contains(search) ||
+                    flights.getToCity().toLowerCase().contains(search) ||
+                    flights.getToCountry().toLowerCase().contains(search)) {
+                result.add(new Airport(flights.getId(), flights.getFromCountry(), flights.getToCity(), flights.getFromAirport()));
+            } else if (flights.getFromCity().toLowerCase().contains(search) ||
+                    flights.getFromCountry().toLowerCase().contains(search) ||
+                    flights.getFromAirport().toLowerCase().contains(search)) {
+                result.add(new Airport(flights.getId(), flights.getFromCountry(), flights.getFromCity(), flights.getFromAirport()));
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    public ResponseEntity<PageResult<CorrectFlight>> getSpecificFlights(SearchFlightsRequest search) {
+        if (checkSearchFlights(search)) {
+            List<CorrectFlight> list = new ArrayList<>();
+            PageResult<CorrectFlight> pageResult = new PageResult<>(0, 0, list);
+            Flights flights = checkForEqualFLights(search);
+            if (flights != null) {
+                pageResult.addItems(transformToCorrectJson(flights));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(pageResult);
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+
+    }
+
+    public Flights checkForEqualFLights(SearchFlightsRequest searchFlightsRequest) {
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        for (Flights flights : flightsRepository.findAll()) {
+            if (flights.getFromAirport().equalsIgnoreCase(searchFlightsRequest.getFrom()) &&
+                    flights.getToAirport().equalsIgnoreCase(searchFlightsRequest.getTo()) &&
+                    LocalDate.parse(flights.getDepartureTime().split(" ")[0], format)
+                            .equals(LocalDate.parse(searchFlightsRequest.getDepartureDate().split(" ")[0], format))) {
+                return flights;
+            }
+        }
+        return null;
+    }
+
+    public boolean checkSearchFlights(SearchFlightsRequest search) {
+        return search.getDepartureDate() != null &&
+                search.getFrom() != null && search.getTo() != null
+                && !search.getFrom().equalsIgnoreCase(search.getTo());
+    }
+
+
+    public long getIdFirstFlight() {
+        long id = 1;
+        while (true) {
+            if (flightsRepository.findById(id).isPresent()) {
+                return flightsRepository.findById(id).get().getId();
+            }
+            id++;
+        }
+    }
+
+    public void clear() {
+        flightsRepository.deleteAll();
+    }
+
+
 }

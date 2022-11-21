@@ -1,6 +1,8 @@
-package io.codelex.flightplanner.controllers.adminController;
+package io.codelex.flightplanner.controllers;
 
+import io.codelex.flightplanner.Service.FlightsService;
 import io.codelex.flightplanner.domain.CorrectFlight;
+import io.codelex.flightplanner.domain.Flights;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,28 +12,28 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin-api")
 public class AdminController {
 
-    private final AdminService adminService;
+    private final FlightsService flightsService;
 
     @Autowired
-    public AdminController(AdminService adminService) {
-        this.adminService = adminService;
+    public AdminController(FlightsService flightsService) {
+        this.flightsService = flightsService;
     }
 
     @PutMapping("/flights")
     @ResponseBody
     synchronized public ResponseEntity<CorrectFlight> addFlight(@RequestBody CorrectFlight correctFlight) {
-        return adminService.addFlight(correctFlight);
+        return flightsService.addFlight(correctFlight);
     }
 
     @DeleteMapping("/flights/{id}")
     synchronized public void deleteFlight(@PathVariable String id) {
-        adminService.deleteFlight(id);
+        flightsService.deleteFlight(id);
     }
 
     @GetMapping("/flights/{id}")
     @ResponseBody
     public ResponseEntity<CorrectFlight> fetchFlight(@PathVariable String id) {
-        return adminService.fetchFlight(id);
+        return flightsService.fetchFlight(id);
     }
 
 

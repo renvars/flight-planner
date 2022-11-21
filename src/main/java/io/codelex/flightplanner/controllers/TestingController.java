@@ -1,5 +1,6 @@
-package io.codelex.flightplanner.controllers.testingController;
+package io.codelex.flightplanner.controllers;
 
+import io.codelex.flightplanner.Service.FlightsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -9,18 +10,18 @@ import org.springframework.web.bind.annotation.*;
 public class TestingController {
 
 
-    private final TestingService testingService;
+    private final FlightsService flightsService;
 
     @Autowired
-    public TestingController(TestingService testingService) {
-        this.testingService = testingService;
+    public TestingController(FlightsService flightsService) {
+        this.flightsService = flightsService;
     }
 
 
     @PostMapping("/clear")
     @ResponseStatus(code = HttpStatus.OK)
     public void clear() {
-        testingService.clear();
+        flightsService.clear();
     }
 
 
