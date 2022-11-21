@@ -7,6 +7,7 @@ public class Flights {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
     private String fromCountry;
     private String fromCity;
     private String fromAirport;
