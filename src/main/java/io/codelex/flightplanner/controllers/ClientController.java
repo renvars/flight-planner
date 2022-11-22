@@ -1,17 +1,19 @@
 package io.codelex.flightplanner.controllers;
 
 import io.codelex.flightplanner.Service.FlightsService;
-import io.codelex.flightplanner.domain.*;
-import io.codelex.flightplanner.repository.FlightsRepository;
+import io.codelex.flightplanner.domain.Airport;
+import io.codelex.flightplanner.domain.Flight;
+import io.codelex.flightplanner.domain.PageResult;
+import io.codelex.flightplanner.domain.SearchFlightRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Array;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/")
 public class ClientController {
 
     private final FlightsService flightsService;
@@ -22,21 +24,21 @@ public class ClientController {
     }
 
     @GetMapping("/airports")
-    @ResponseBody
-    public ResponseEntity<List<Airport>> getAirports(@RequestParam String search) {
-        return flightsService.getAirports(search);
+    @ResponseStatus(HttpStatus.OK)
+    public List<Airport> searchAirports(@RequestParam String search) {
+        return flightsService.searchAirports(search);
     }
 
     @PostMapping("/flights/search")
-    @ResponseBody
-    synchronized public ResponseEntity<PageResult<CorrectFlight>> getSpecificFlights(@RequestBody SearchFlightsRequest searchFlightsRequest) {
-        return flightsService.getSpecificFlights(searchFlightsRequest);
+    public PageResult<Flight> searchFlights(@Valid @RequestBody SearchFlightRequest searchFlightRequest) {
+        return flightsService.searchFlights(searchFlightRequest);
     }
 
     @GetMapping("/flights/{id}")
-    @ResponseBody
-    public ResponseEntity<CorrectFlight> fetchFlight(@PathVariable String id) {
+    @ResponseStatus(HttpStatus.OK)
+    public Flight fetchFlight(@PathVariable String id) {
         return flightsService.fetchFlight(id);
     }
+
 
 }

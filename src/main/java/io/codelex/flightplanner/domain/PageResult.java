@@ -1,16 +1,16 @@
 package io.codelex.flightplanner.domain;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public class PageResult<CorrectFlight> {
+public class PageResult<T> {
+
     private int page;
-    private final AtomicInteger totalItems;
-    private List<CorrectFlight> items;
+    private int totalItems;
+    private List<T> items;
 
-    public PageResult(int page, int totalItems, List<CorrectFlight> items) {
+    public PageResult(int page, int totalItems, List<T> items) {
         this.page = page;
-        this.totalItems = new AtomicInteger(totalItems);
+        this.totalItems = totalItems;
         this.items = items;
     }
 
@@ -23,23 +23,18 @@ public class PageResult<CorrectFlight> {
     }
 
     public int getTotalItems() {
-        return totalItems.get();
+        return totalItems;
     }
 
     public void setTotalItems(int totalItems) {
-        this.totalItems.getAndSet(totalItems);
+        this.totalItems = totalItems;
     }
 
-    public List<CorrectFlight> getItems() {
+    public List<T> getItems() {
         return items;
     }
 
-    public void setItems(List<CorrectFlight> items) {
+    public void setItems(List<T> items) {
         this.items = items;
-    }
-
-    public void addItems(CorrectFlight correctFlight) {
-        this.items.add(correctFlight);
-        this.totalItems.getAndAdd(1);
     }
 }

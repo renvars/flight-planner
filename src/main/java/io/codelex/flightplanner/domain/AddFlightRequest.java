@@ -1,28 +1,36 @@
 package io.codelex.flightplanner.domain;
 
-public class CorrectFlight {
-    private Long id;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+
+import static io.codelex.flightplanner.utils.Utilities.DATE_TIME_FORMATTER;
+
+public class AddFlightRequest {
+
+
+    @Valid
+    @NotNull
     private Airport from;
+    @Valid
+    @NotNull
     private Airport to;
+    @NotBlank
+
     private String carrier;
+    @NotBlank
+
     private String departureTime;
+    @NotBlank
     private String arrivalTime;
 
-    public CorrectFlight(Airport from, Airport to, String carrier, String departureTime, String arrivalTime) {
+    public AddFlightRequest(Airport from, Airport to, String carrier, String departureTime, String arrivalTime) {
         this.from = from;
         this.to = to;
         this.carrier = carrier;
         this.departureTime = departureTime;
         this.arrivalTime = arrivalTime;
-    }
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Airport getFrom() {
@@ -65,5 +73,8 @@ public class CorrectFlight {
         this.arrivalTime = arrivalTime;
     }
 
-
+    public Flight changeToFlight(int id) {
+        return new Flight(id, getFrom(), getTo(), getCarrier(), LocalDateTime.parse(getDepartureTime(), DATE_TIME_FORMATTER)
+                , LocalDateTime.parse(getArrivalTime(), DATE_TIME_FORMATTER));
+    }
 }
