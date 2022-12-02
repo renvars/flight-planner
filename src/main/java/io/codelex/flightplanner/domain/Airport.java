@@ -23,10 +23,10 @@ public class Airport {
     private String airport;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "from")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "from")
     private List<Flight> flightsFrom;
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "to")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "to")
     private List<Flight> flightsTo;
 
     public Airport(String country, String city, String airport, List<Flight> flightsFrom, List<Flight> flightsTo) {
