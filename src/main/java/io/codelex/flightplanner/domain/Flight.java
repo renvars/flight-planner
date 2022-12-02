@@ -17,11 +17,11 @@ public class Flight {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "from_airport")
     private Airport from;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "to_airport")
     private Airport to;
 
@@ -32,7 +32,6 @@ public class Flight {
     private LocalDateTime departureTime;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-
     @Column(name = "arrival_time")
     private LocalDateTime arrivalTime;
 

@@ -22,39 +22,16 @@ public class Airport {
     @Column(name = "airport")
     private String airport;
 
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "from")
-    private List<Flight> flightsFrom;
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "to")
-    private List<Flight> flightsTo;
-
     public Airport(String country, String city, String airport, List<Flight> flightsFrom, List<Flight> flightsTo) {
         this.country = country;
         this.city = city;
         this.airport = airport;
-        this.flightsFrom = flightsFrom;
-        this.flightsTo = flightsTo;
+
     }
 
     public Airport() {
     }
 
-    public List<Flight> getFlightsFrom() {
-        return flightsFrom;
-    }
-
-    public void setFlightsFrom(List<Flight> flightsFrom) {
-        this.flightsFrom = flightsFrom;
-    }
-
-    public List<Flight> getFlightsTo() {
-        return flightsTo;
-    }
-
-    public void setFlightsTo(List<Flight> flightsTo) {
-        this.flightsTo = flightsTo;
-    }
 
     public String getCountry() {
         return country;
