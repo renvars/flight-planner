@@ -5,6 +5,8 @@ import io.codelex.flightplanner.repository.AirportsRepositoryDatabase;
 import io.codelex.flightplanner.repository.FlightRepositoryDatabase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
@@ -40,7 +42,8 @@ public class FlightServiceDatabase implements FlightsService {
     @Override
     public Flight addFlight(AddFlightRequest addFlightRequest) {
         Flight flight = addFlightRequest.changeToFlight();
-        if (flightRepo.findAll().stream().anyMatch(flight1 -> flight1.equals(flight))) {
+        Optional<Flight> searchFlight = flightRepo.findByArrivalTimeAndCarrierAndDepartureTimeAndFromAndTo(flight.getArrivalTime(), flight.getCarrier(), flight.getDepartureTime(), flight.getFrom(), flight.getTo());
+        if (searchFlight.isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
         if (flight.getFrom().equals(flight.getTo()) || flight.getArrivalTime().isBefore(flight.getDepartureTime())
@@ -53,11 +56,13 @@ public class FlightServiceDatabase implements FlightsService {
     }
 
     public void saveAirports(Flight flight) {
-        if (airportRepo.findAll().stream().noneMatch(airport -> airport.equals(flight.getTo()))) {
-            airportRepo.save(flight.getTo());
+        Airport airportFrom = flight.getFrom();
+        Airport airportTo = flight.getTo();
+        if (airportRepo.findByAirportAndCityAndCountry(airportTo.getAirport(), airportTo.getCity(), airportTo.getCountry()).isEmpty()) {
+            airportRepo.save(airportTo);
         }
-        if (airportRepo.findAll().stream().noneMatch(airport -> airport.equals(flight.getFrom()))) {
-            airportRepo.save(flight.getFrom());
+        if (airportRepo.findByAirportAndCityAndCountry(airportFrom.getAirport(), airportFrom.getCity(), airportFrom.getCountry()).isEmpty()) {
+            airportRepo.save(airportFrom);
         }
     }
 
@@ -83,8 +88,8 @@ public class FlightServiceDatabase implements FlightsService {
     @Override
     public List<Airport> searchAirports(String string) {
         String finalString = string.trim();
-        return airportRepo.findAll().stream()
-                .filter(airport -> airport.sameAirport(finalString)).toList();
+        System.out.println(airportRepo.findAirportsByAirportContainsIgnoreCaseOrCityContainsIgnoreCaseOrCountryContainingIgnoreCase(finalString, finalString, finalString));
+        return airportRepo.findAirportsByAirportContainsIgnoreCaseOrCityContainsIgnoreCaseOrCountryContainingIgnoreCase(finalString, finalString, finalString);
     }
 
     @Override
@@ -92,13 +97,10 @@ public class FlightServiceDatabase implements FlightsService {
         if (searchFlightRequest.getFrom().equals(searchFlightRequest.getTo())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        List<Flight> flightList = flightRepo.findAll()
-                .stream().toList().stream()
-                .filter(flight -> flight.getTo().getAirport().equalsIgnoreCase(searchFlightRequest.getTo()) &&
-                        flight.getFrom().getAirport().equalsIgnoreCase(searchFlightRequest.getFrom()) &&
-                        searchFlightRequest.getTime().isEqual(flight.getDepartureTime().toLocalDate())).toList();
-
-        
+        List<Flight> flightList = flightRepo.findFlightsByFromAndTo(
+                airportRepo.findAirportByAirport(searchFlightRequest.getFrom()),
+                airportRepo.findAirportByAirport(searchFlightRequest.getTo())
+        ).stream().filter(flight -> flight.getDepartureTime().toLocalDate().isEqual(searchFlightRequest.getTime())).toList();
         return new PageResult<>(0, flightList.size(), flightList);
     }
 }
