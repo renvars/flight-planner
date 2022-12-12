@@ -73,8 +73,13 @@ public class AddFlightRequest {
         this.arrivalTime = arrivalTime;
     }
 
-    public Flight changeToFlight(int id) {
+    public Flight changeToFlight(Long id) {
         return new Flight(id, getFrom(), getTo(), getCarrier(), LocalDateTime.parse(getDepartureTime(), DATE_TIME_FORMATTER)
+                , LocalDateTime.parse(getArrivalTime(), DATE_TIME_FORMATTER));
+    }
+
+    public Flight changeToFlight() {
+        return new Flight(getFrom(), getTo(), getCarrier(), LocalDateTime.parse(getDepartureTime(), DATE_TIME_FORMATTER)
                 , LocalDateTime.parse(getArrivalTime(), DATE_TIME_FORMATTER));
     }
 }

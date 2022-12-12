@@ -1,25 +1,37 @@
 package io.codelex.flightplanner.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 import java.util.Objects;
 
+@Entity
+@Table(name = "Airports")
 public class Airport {
-
     @NotBlank
-
     private String country;
     @NotBlank
-
     private String city;
     @NotBlank
-
+    @Id
+    @Column(name = "airport")
     private String airport;
 
-    public Airport(String country, String city, String airport) {
-        this.country = country.trim();
-        this.city = city.trim();
-        this.airport = airport.trim();
+    public Airport(String country, String city, String airport, List<Flight> flightsFrom, List<Flight> flightsTo) {
+        this.country = country;
+        this.city = city;
+        this.airport = airport;
+
     }
+
+    public Airport() {
+    }
+
 
     public String getCountry() {
         return country;
@@ -62,5 +74,14 @@ public class Airport {
     public boolean sameAirport(String phrase) {
         return country.toLowerCase().contains(phrase.toLowerCase().trim()) || city.toLowerCase().contains(phrase.toLowerCase().trim())
                 || airport.toLowerCase().contains(phrase.toLowerCase().trim());
+    }
+
+    @Override
+    public String toString() {
+        return "Airport{" +
+                "country='" + country + '\'' +
+                ", city='" + city + '\'' +
+                ", airport='" + airport + '\'' +
+                '}';
     }
 }

@@ -2,30 +2,40 @@ package io.codelex.flightplanner.domain;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-
+@Entity
+@Table(name = "Flights")
 public class Flight {
-
-    private int id;
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
+    @ManyToOne
+    @JoinColumn(name = "from_airport")
     private Airport from;
 
+    @ManyToOne
+    @JoinColumn(name = "to_airport")
     private Airport to;
 
     private String carrier;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @Column(name = "departure_time")
     private LocalDateTime departureTime;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @Column(name = "arrival_time")
     private LocalDateTime arrivalTime;
 
-    public Flight(int id, Airport from, Airport to, String carrier, LocalDateTime departureTime, LocalDateTime arrivalTime) {
-        this.id = id;
+    public Flight(Airport from, Airport to, String carrier, LocalDateTime departureTime, LocalDateTime arrivalTime) {
         this.from = from;
         this.to = to;
         this.carrier = carrier;
@@ -33,11 +43,23 @@ public class Flight {
         this.arrivalTime = arrivalTime;
     }
 
-    public int getId() {
+    public Flight(Long id, Airport from, Airport to, String carrier, LocalDateTime departureTime, LocalDateTime arrivalTime) {
+        this.from = from;
+        this.to = to;
+        this.carrier = carrier;
+        this.departureTime = departureTime;
+        this.arrivalTime = arrivalTime;
+    }
+
+    public Flight() {
+    }
+
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

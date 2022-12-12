@@ -5,13 +5,13 @@ import io.codelex.flightplanner.repository.FlightsRepositoryInMemory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 
-@Repository
+@Service
 @ConditionalOnProperty(prefix = "flightapp", name = "appmode", havingValue = "inmemory")
 public class FlightsServiceInMemory implements FlightsService {
     private final FlightsRepositoryInMemory flightsRepositoryInMemory;
@@ -29,7 +29,7 @@ public class FlightsServiceInMemory implements FlightsService {
 
     @Override
     public Flight addFlight(AddFlightRequest addFlightRequest) {
-        Flight flight = addFlightRequest.changeToFlight(flightsRepositoryInMemory.getSize());
+        Flight flight = addFlightRequest.changeToFlight((long) flightsRepositoryInMemory.getSize());
         if (flightsRepositoryInMemory.contains(flight)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }

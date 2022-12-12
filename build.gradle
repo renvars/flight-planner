@@ -16,6 +16,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation:2.7.5'
+    implementation 'org.postgresql:postgresql:42.1.4'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.7.4'
+    implementation 'com.h2database:h2:2.1.212'
+    implementation 'org.liquibase:liquibase-core:4.17.2'
+    implementation 'org.projectlombok:lombok:1.18.22'
 
 
 }
